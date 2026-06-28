@@ -2,12 +2,12 @@
 
 Learn tmux by playing — a free browser puzzle game.
 
-**Play:** [projects.minitcp.com/starttmux](https://projects.minitcp.com/starttmux)  
+**Play:** [minitcp.com/projects/starttmux](https://minitcp.com/projects/starttmux)
 **Source:** [github.com/jiehonglim/starttmux](https://github.com/jiehonglim/starttmux)
 
 ## What it is
 
-Five-step **golden path** for AI coders managing coding agents in tmux. Plus a [cheat sheet](https://projects.minitcp.com/starttmux/cheatsheet.html). No login, no paywall. Build tmux muscle memory on desktop (keyboard) or mobile (tap keycaps in order).
+Five-step **golden path** for AI coders managing coding agents in tmux. Plus a [cheat sheet](https://minitcp.com/projects/starttmux/cheatsheet.html). No login, no paywall. Build tmux muscle memory on desktop (keyboard) or mobile (tap keycaps in order).
 
 - **Desktop:** prefix is **Ctrl+b**, then the tmux key (e.g. `%` to split vertically)
 - **Mobile:** tap **⌃ b** and the shortcut keycaps in order (`?mode=mobile` to test on desktop)
