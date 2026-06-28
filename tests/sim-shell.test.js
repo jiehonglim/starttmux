@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { runVfsCommand, resolvePath, DEFAULT_CWD } from '../frontend/js/sim/vfs.js';
-import { createSimSession } from '../frontend/js/sim/sim-session.js';
+import { createSimSession, ensureSessionShells } from '../frontend/js/sim/sim-session.js';
+import { applyTmuxKey } from '../frontend/js/interpreter.js';
 import { runShellLine } from '../frontend/js/sim/shell.js';
 import { checkEasterEgg } from '../frontend/js/sim/easter-egg.js';
 
@@ -38,6 +39,20 @@ test('runShellLine: npm test prints vitest output', () => {
   const pane = session.windows[0].panes[0];
   runShellLine(pane, 'npm test');
   assert.ok(pane.shell.lines.some((l) => l.includes('passed')));
+});
+
+test('split pane gets shell state for prompt', () => {
+  const session = createSimSession();
+  session.prefixPending = true;
+  applyTmuxKey(session, '%');
+  assert.equal(session.windows[0].panes.length, 2);
+  ensureSessionShells(session);
+  for (const pane of session.windows[0].panes) {
+    assert.ok(pane.shell);
+    assert.ok(Array.isArray(pane.shell.lines));
+  }
+  const focused = session.windows[0].panes.find((p) => p.focused);
+  assert.ok(focused?.shell);
 });
 
 test('easter egg trigger', () => {

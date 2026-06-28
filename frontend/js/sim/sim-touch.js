@@ -29,7 +29,7 @@ export function attachSimTouch(opts) {
   function runInFocused(cmd) {
     const win = session.windows[session.activeWindow];
     const pane = win?.panes.find((p) => p.focused) ?? win?.panes[0];
-    if (!pane) return;
+    if (!pane?.shell) return;
     runShellLine(pane, cmd);
     render();
     onTripleAgent?.();

@@ -12,16 +12,36 @@ import { DEFAULT_CWD } from './vfs.js';
 
 /** @typedef {import('../state.js').Session & { windows: (import('../state.js').Window & { panes: SimPane[] })[] }} SimSession */
 
-function emptyShell() {
+/** @param {boolean} [fresh] */
+export function createPaneShell(fresh = false) {
   return {
     cwd: DEFAULT_CWD,
-    lines: [
-      'Welcome to the starttmux simulator.',
-      'Try: help · grok · npm test · tail -f logs/deploy.log',
-    ],
+    lines: fresh
+      ? ['New pane — type help or spawn an agent']
+      : [
+          'Welcome to the starttmux simulator.',
+          'Try: help · grok · npm test · tail -f logs/deploy.log',
+        ],
     input: '',
     process: null,
   };
+}
+
+/** @param {import('../state.js').Pane} pane */
+export function ensurePaneShell(pane) {
+  if (!pane.shell) {
+    pane.shell = createPaneShell(true);
+  }
+  return /** @type {SimPane} */ (pane);
+}
+
+/** @param {SimSession} session */
+export function ensureSessionShells(session) {
+  for (const win of session.windows) {
+    for (const pane of win.panes) {
+      ensurePaneShell(pane);
+    }
+  }
 }
 
 /** @returns {SimSession} */
@@ -44,7 +64,7 @@ export function createSimSession() {
 
   for (const win of session.windows) {
     for (const pane of win.panes) {
-      pane.shell = emptyShell();
+      pane.shell = createPaneShell();
     }
   }
   return session;

@@ -56,7 +56,7 @@ export function attachSimInput(opts) {
 
   function handleShellChar(char) {
     const pane = getFocusedPane();
-    if (!pane) return;
+    if (!pane?.shell) return;
     pane.shell.input += char;
     render();
   }
@@ -127,6 +127,7 @@ export function attachSimInput(opts) {
 
   document.addEventListener('keydown', onKeyDown);
   root.focus();
+  render();
 
   return {
     render,

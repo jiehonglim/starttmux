@@ -1,6 +1,7 @@
 import { activeWindow, getFocusedPane } from '../state.js';
 import { countRunningAgents } from './processes.js';
 import { agentPromptLabel } from './agents.js';
+import { ensureSessionShells } from './sim-session.js';
 
 /** @param {import('./sim-session.js').SimPane} pane */
 function promptForPane(pane, focused) {
@@ -23,6 +24,7 @@ function procBadgeLabel(pane) {
 
 /** @param {HTMLElement} root @param {import('./sim-session.js').SimSession} session @param {{ tripleAgent?: boolean }} [flags] */
 export function renderSimSession(root, session, flags = {}) {
+  ensureSessionShells(session);
   const win = activeWindow(session);
   if (!win) return;
 
