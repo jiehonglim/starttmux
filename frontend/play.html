@@ -9,6 +9,10 @@
 <body>
   <header class="site-header">
     <a href="index.html" class="site-header__brand">start<span>tmux</span></a>
+    <nav class="site-header__nav">
+      <a href="cheatsheet.html" class="site-header__link">Cheat sheet</a>
+      <a href="index.html" class="site-header__link">Play</a>
+    </nav>
     <button type="button" class="btn btn--ghost" id="theme-toggle">Theme</button>
   </header>
 
@@ -16,6 +20,7 @@
     <div class="play-header">
       <h1 data-title>Loading…</h1>
       <p data-hint></p>
+      <p class="play-agent-tip" data-agent-tip hidden></p>
     </div>
 
     <div class="terminal" data-terminal tabindex="0">

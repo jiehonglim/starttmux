@@ -22,6 +22,7 @@ function boot() {
   const touchPanel = document.querySelector('[data-touch-panel]');
   const titleEl = document.querySelector('[data-title]');
   const hintEl = document.querySelector('[data-hint]');
+  const agentTipEl = document.querySelector('[data-agent-tip]');
   const mobile = isMobileMode();
 
   if (!puzzle || !root || !overlay) {
@@ -31,11 +32,17 @@ function boot() {
 
   document.body.classList.add(mobile ? 'mode-mobile' : 'mode-desktop');
 
-  if (titleEl) titleEl.textContent = puzzle.title;
+  if (titleEl) {
+    titleEl.textContent = `Step ${puzzle.pathOrder}: ${puzzle.pathTitle}`;
+  }
   if (hintEl) {
     hintEl.textContent = mobile && puzzle.mobile?.hint
       ? puzzle.mobile.hint
       : puzzle.hint;
+  }
+  if (agentTipEl && puzzle.agentTip) {
+    agentTipEl.textContent = puzzle.agentTip;
+    agentTipEl.hidden = false;
   }
 
   const game = {

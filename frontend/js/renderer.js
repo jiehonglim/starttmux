@@ -1,4 +1,6 @@
 import { activeWindow, getFocusedPane } from './state.js';
+import { nextPathLevel } from './reference.js';
+import { listPuzzles } from './puzzles.js';
 
 /** @param {HTMLElement} root @param {import('./state.js').Session} session */
 export function renderSession(root, session) {
@@ -63,18 +65,26 @@ export function showWinOverlay(overlay, puzzle, score, platform = 'desktop') {
   const time = formatTime ? formatTime(score.elapsedMs) : `${score.elapsedMs}ms`;
   const mistakeLabel = platform === 'mobile' ? 'Wrong taps' : 'Wrong keys';
   const modeTag = platform === 'mobile' ? '📱 Touch' : '⌨️ Desktop';
+  const next = nextPathLevel(listPuzzles(), puzzle.id);
+  const mode = platform === 'mobile' ? 'mobile' : 'desktop';
+  const nextAction = next
+    ? `<a href="play.html?level=${next.id}&mode=${mode}" class="btn">Next: ${next.pathTitle}</a>`
+    : `<a href="index.html" class="btn">Golden path complete</a>`;
+
   overlay.hidden = false;
   overlay.innerHTML = `
     <div class="win-card">
-      <p class="win-card__tag">${modeTag} · Level ${puzzle.id} complete</p>
-      <h2 class="win-card__title">${puzzle.title}</h2>
+      <p class="win-card__tag">${modeTag} · Step ${puzzle.pathOrder} complete</p>
+      <h2 class="win-card__title">${puzzle.pathTitle}</h2>
       <dl class="win-card__stats">
         <div><dt>Time</dt><dd>${time}</dd></div>
         <div><dt>${mistakeLabel}</dt><dd>${score.wrongKeys}</dd></div>
       </dl>
       <div class="win-card__actions">
         <button type="button" class="btn" data-retry>Retry</button>
-        <a href="index.html" class="btn btn--ghost">All levels</a>
+        ${nextAction}
+        <a href="cheatsheet.html" class="btn btn--ghost">Cheat sheet</a>
+        <a href="index.html" class="btn btn--ghost">All steps</a>
       </div>
     </div>
   `;

@@ -4,48 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StartTmux — learn tmux by playing</title>
-  <meta name="description" content="A playful tmux puzzle game. Build muscle memory with keyboard-driven challenges.">
+  <meta name="description" content="Golden path tmux puzzles for AI coders. Build muscle memory for managing coding agents.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%96%A3</text></svg>">
   <link rel="stylesheet" href="css/terminal.css">
 </head>
 <body>
   <header class="site-header">
     <a href="index.html" class="site-header__brand">start<span>tmux</span></a>
+    <nav class="site-header__nav">
+      <a href="cheatsheet.html" class="site-header__link">Cheat sheet</a>
+      <a href="index.html" class="site-header__link site-header__link--active">Play</a>
+    </nav>
     <button type="button" class="btn btn--ghost" id="theme-toggle" aria-label="Toggle theme">Theme</button>
   </header>
 
   <section class="hero">
-    <h1>Learn tmux by playing</h1>
-    <p id="hero-copy">Five practice puzzles — all unlocked. Keyboard on desktop, tap shortcuts on mobile.</p>
+    <h1>Golden path for AI coders</h1>
+    <p id="hero-copy">Run agents in tmux without losing your place — five practice steps, all unlocked. Keyboard on desktop, tap shortcuts on mobile.</p>
+  </section>
+
+  <section class="golden-path" aria-label="Golden path overview">
+    <h2>Learn in order</h2>
+    <div class="golden-path__strip" id="golden-path-strip"></div>
   </section>
 
   <div class="level-grid" id="level-grid"></div>
 
+  <footer class="site-footer">
+    <a href="cheatsheet.html" class="btn btn--ghost">Cheat sheet →</a>
+  </footer>
+
   <script type="module">
-    import { listPuzzles } from './js/puzzles.js';
+    import { listPuzzlesByPath } from './js/puzzles.js';
     import { loadCompleted, loadCompletedMobile, formatTime } from './js/scoring.js';
     import { isMobileMode } from './js/device.js';
 
     const mobile = isMobileMode();
     const completed = mobile ? loadCompletedMobile() : loadCompleted();
     const grid = document.getElementById('level-grid');
+    const pathStrip = document.getElementById('golden-path-strip');
+    const puzzles = listPuzzlesByPath();
 
     if (mobile) {
       document.getElementById('hero-copy').textContent =
-        'Five touch puzzles — tap ⌃ b and the tmux keys in order.';
+        'Five touch steps — tap ⌃ b and tmux keys in order. Same golden path as desktop.';
     }
 
-    for (const puzzle of listPuzzles()) {
+    const mode = mobile ? 'mobile' : 'desktop';
+
+    for (const puzzle of puzzles) {
       const done = completed[String(puzzle.id)];
+
+      const step = document.createElement('a');
+      step.className = 'golden-path__step';
+      step.href = `play.html?level=${puzzle.id}&mode=${mode}`;
+      step.innerHTML = `
+        <span class="golden-path__step-num">Step ${puzzle.pathOrder}</span>
+        <span class="golden-path__step-title">${puzzle.pathTitle}</span>
+        <span class="golden-path__step-keys">${puzzle.shortcut}</span>
+      `;
+      pathStrip.appendChild(step);
+
       const card = document.createElement('article');
       card.className = 'level-card' + (done ? ' level-card--done' : '');
-
-      const mode = mobile ? 'mobile' : 'desktop';
       card.innerHTML = `
         <p class="level-card__bucket">${puzzle.bucket}</p>
-        <h2 class="level-card__title">${puzzle.title}</h2>
-        <p class="level-card__meta">~${puzzle.estSeconds}s${done ? ` · best ${formatTime(done.elapsedMs)}` : ''}</p>
-        <a href="play.html?level=${puzzle.id}&mode=${mode}" class="btn level-card__play">Play</a>
+        <h2 class="level-card__title">${puzzle.pathTitle}</h2>
+        <p class="level-card__agent-tip">${puzzle.agentTip}</p>
+        <p class="level-card__meta">~${puzzle.estSeconds}s · ${puzzle.shortcut}${done ? ` · best ${formatTime(done.elapsedMs)}` : ''}</p>
+        <a href="play.html?level=${puzzle.id}&mode=${mode}" class="btn level-card__play">Play step ${puzzle.pathOrder}</a>
       `;
       grid.appendChild(card);
     }

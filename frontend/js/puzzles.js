@@ -5,9 +5,13 @@
 
 /** @typedef {{
  *   id: number,
+ *   pathOrder: number,
+ *   pathTitle: string,
  *   title: string,
  *   bucket: string,
  *   hint: string,
+ *   agentTip: string,
+ *   shortcut: string,
  *   estSeconds: number,
  *   start: PuzzleStart,
  *   goal: PuzzleGoal,
@@ -41,27 +45,36 @@ export function goalSnapshot(puzzle) {
   return normalizeSnapshot(puzzle.goal);
 }
 
+/** @param {Puzzle[]} puzzles */
+export function listPuzzlesByPath(puzzles = PUZZLES) {
+  return [...puzzles].sort((a, b) => a.pathOrder - b.pathOrder);
+}
+
 export const PUZZLES = /** @type {Puzzle[]} */ ([
   {
     id: 1,
-    title: 'First Split',
-    bucket: 'Prefix + panes',
-    hint: 'Use the tmux prefix (Ctrl+b), then % to split vertically.',
+    pathOrder: 1,
+    pathTitle: 'Side-by-side',
+    title: 'Side-by-side',
+    bucket: 'Golden path · step 1',
+    hint: 'Split vertically: prefix + % — agent left, your shell right.',
+    agentTip: 'Run your coding agent in one pane; keep git and npm in the other.',
+    shortcut: '⌃ b %',
     estSeconds: 45,
     start: {
       windows: [{
-        name: 'shell',
-        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'main', focused: true }],
+        name: 'agent',
+        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'agent', focused: true }],
       }],
       activeWindow: 0,
     },
     goal: {
       activeWindow: 0,
       windows: [{
-        name: 'shell',
+        name: 'agent',
         panes: [
-          { id: 'p0', r: 0, c: 0, h: 100, w: 50, focused: false },
-          { id: 'p1', r: 0, c: 50, h: 100, w: 50, focused: true },
+          { id: 'p0', r: 0, c: 0, h: 100, w: 50, focused: false, label: 'agent' },
+          { id: 'p1', r: 0, c: 50, h: 100, w: 50, focused: true, label: 'shell' },
         ],
       }],
     },
@@ -71,22 +84,26 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
       type: 'sequence',
       steps: ['prefix', '%'],
       keycaps: ['prefix', '%', 'c', '"', 'ArrowRight'],
-      hint: 'Tap the shortcut in order: ⌃ b, then %.',
+      hint: 'Tap ⌃ b, then % to park the agent beside your shell.',
     },
   },
   {
     id: 2,
-    title: 'Find Focus',
-    bucket: 'Pane control',
-    hint: 'Move focus with prefix + arrow keys. Reach the highlighted pane.',
+    pathOrder: 2,
+    pathTitle: 'Check the agent',
+    title: 'Check the agent',
+    bucket: 'Golden path · step 2',
+    hint: 'Move focus with prefix + arrow keys — peek at agent output, then back to your shell.',
+    agentTip: 'Glance at what the agent printed without losing your command line.',
+    shortcut: '⌃ b →',
     estSeconds: 60,
     start: {
       windows: [{
-        name: 'shell',
+        name: 'agent',
         panes: [
-          { id: 'p0', r: 0, c: 0, h: 50, w: 50, label: 'alpha', focused: true },
-          { id: 'p1', r: 0, c: 50, h: 50, w: 50, label: 'beta', focused: false },
-          { id: 'p2', r: 50, c: 0, h: 50, w: 100, label: 'gamma', focused: false },
+          { id: 'p0', r: 0, c: 0, h: 50, w: 50, label: 'agent', focused: true },
+          { id: 'p1', r: 0, c: 50, h: 50, w: 50, label: 'shell', focused: false },
+          { id: 'p2', r: 50, c: 0, h: 50, w: 100, label: 'tests', focused: false },
         ],
       }],
       activeWindow: 0,
@@ -94,7 +111,7 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
     goal: {
       activeWindow: 0,
       windows: [{
-        name: 'shell',
+        name: 'agent',
         panes: [
           { id: 'p0', r: 0, c: 0, h: 50, w: 50, focused: false },
           { id: 'p1', r: 0, c: 50, h: 50, w: 50, focused: true },
@@ -108,19 +125,23 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
       type: 'sequence',
       steps: ['prefix', 'ArrowRight'],
       keycaps: ['prefix', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'],
-      hint: 'Tap ⌃ b, then the right arrow to move focus.',
+      hint: 'Tap ⌃ b, then → to jump focus to the shell pane.',
     },
   },
   {
     id: 3,
-    title: 'New Window',
-    bucket: 'Windows',
-    hint: 'Create a new window with prefix + c — tmux jumps you there automatically.',
+    pathOrder: 4,
+    pathTitle: 'New agent window',
+    title: 'New agent window',
+    bucket: 'Golden path · step 4',
+    hint: 'Open a fresh window with prefix + c — tmux jumps you there for a second agent or repo.',
+    agentTip: 'One window per project keeps Claude, Cursor, and long jobs from colliding.',
+    shortcut: '⌃ b c',
     estSeconds: 75,
     start: {
       windows: [{
-        name: 'shell',
-        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'main', focused: true }],
+        name: 'agent',
+        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'agent', focused: true }],
       }],
       activeWindow: 0,
     },
@@ -128,12 +149,12 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
       activeWindow: 1,
       windows: [
         {
-          name: 'shell',
+          name: 'agent',
           panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, focused: false }],
         },
         {
           name: 'win1',
-          panes: [{ id: 'p1', r: 0, c: 0, h: 100, w: 100, focused: true }],
+          panes: [{ id: 'p1', r: 0, c: 0, h: 100, w: 100, focused: true, label: 'agent2' }],
         },
       ],
     },
@@ -146,29 +167,33 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
       type: 'sequence',
       steps: ['prefix', 'c'],
       keycaps: ['prefix', 'c', 'n', 'p', '1'],
-      hint: 'Tap ⌃ b, then c to open a new window.',
+      hint: 'Tap ⌃ b, then c to spawn a new agent window.',
     },
   },
   {
     id: 4,
-    title: 'Horizontal Split',
-    bucket: 'Pane control',
-    hint: 'Split the pane horizontally with prefix + " (Shift+\').',
+    pathOrder: 3,
+    pathTitle: 'Logs below',
+    title: 'Logs below',
+    bucket: 'Golden path · step 3',
+    hint: 'Split horizontally: prefix + " — agent on top, streaming logs or tests below.',
+    agentTip: 'Watch vitest, tail, or deploy output without covering the agent transcript.',
+    shortcut: '⌃ b "',
     estSeconds: 60,
     start: {
       windows: [{
-        name: 'shell',
-        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'main', focused: true }],
+        name: 'agent',
+        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'agent', focused: true }],
       }],
       activeWindow: 0,
     },
     goal: {
       activeWindow: 0,
       windows: [{
-        name: 'shell',
+        name: 'agent',
         panes: [
           { id: 'p0', r: 0, c: 0, h: 50, w: 100, focused: false },
-          { id: 'p1', r: 50, c: 0, h: 50, w: 100, focused: true },
+          { id: 'p1', r: 50, c: 0, h: 50, w: 100, focused: true, label: 'logs' },
         ],
       }],
     },
@@ -178,24 +203,28 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
       type: 'sequence',
       steps: ['prefix', '"'],
       keycaps: ['prefix', '"', '%', 'ArrowDown', 'c'],
-      hint: 'Tap ⌃ b, then " to split top and bottom.',
+      hint: 'Tap ⌃ b, then " to stack logs under the agent.',
     },
   },
   {
     id: 5,
-    title: 'Switch Window',
-    bucket: 'Windows',
-    hint: 'Move to the next window with prefix + n (or prefix + 1 to jump directly).',
+    pathOrder: 5,
+    pathTitle: 'Flip agents',
+    title: 'Flip agents',
+    bucket: 'Golden path · step 5',
+    hint: 'Hop to the next window with prefix + n (or prefix + 1 to jump straight there).',
+    agentTip: 'Swap between two agent sessions the way you alt-tab between apps.',
+    shortcut: '⌃ b n',
     estSeconds: 45,
     start: {
       windows: [
         {
-          name: 'shell',
-          panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'main', focused: true }],
+          name: 'agent',
+          panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'agent', focused: true }],
         },
         {
-          name: 'logs',
-          panes: [{ id: 'p1', r: 0, c: 0, h: 100, w: 100, label: 'tail', focused: false }],
+          name: 'win1',
+          panes: [{ id: 'p1', r: 0, c: 0, h: 100, w: 100, label: 'agent2', focused: false }],
         },
       ],
       activeWindow: 0,
@@ -204,12 +233,12 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
       activeWindow: 1,
       windows: [
         {
-          name: 'shell',
+          name: 'agent',
           panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, focused: false }],
         },
         {
-          name: 'logs',
-          panes: [{ id: 'p1', r: 0, c: 0, h: 100, w: 100, focused: true }],
+          name: 'win1',
+          panes: [{ id: 'p1', r: 0, c: 0, h: 100, w: 100, focused: true, label: 'agent2' }],
         },
       ],
     },
@@ -219,7 +248,7 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
       type: 'sequence',
       steps: ['prefix', 'n'],
       keycaps: ['prefix', 'n', 'p', '1', 'c'],
-      hint: 'Tap ⌃ b, then n to jump to the next window.',
+      hint: 'Tap ⌃ b, then n to flip to the other agent window.',
     },
   },
 ]);

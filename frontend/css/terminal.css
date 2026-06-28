@@ -65,6 +65,30 @@ a:hover {
   color: var(--accent);
 }
 
+.site-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+  margin-right: 0.75rem;
+}
+
+.site-header__link {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.site-header__link:hover,
+.site-header__link--active {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.site-header__link--active {
+  color: var(--accent);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -491,5 +515,298 @@ a:hover {
     min-width: 3.5rem;
     min-height: 3.5rem;
     font-size: 1.05rem;
+  }
+}
+
+/* --- Cheat sheet --- */
+
+.cheat-page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.cheat-hero {
+  margin-bottom: 2rem;
+}
+
+.cheat-hero__eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--accent);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cheat-hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+}
+
+.cheat-hero__lead {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.cheat-section {
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.cheat-section h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.cheat-section--appendix {
+  opacity: 0.92;
+}
+
+.cheat-muted {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.cheat-prefix {
+  margin: 0 0 0.75rem;
+}
+
+.cheat-kbd {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.cheat-kbd-gap {
+  margin: 0 0.25rem;
+  color: var(--muted);
+}
+
+.cheat-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.cheat-table th,
+.cheat-table td {
+  padding: 0.5rem 0.35rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.cheat-table th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.cheat-table__when {
+  color: var(--muted);
+}
+
+.cheat-badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(63, 185, 80, 0.15);
+  color: var(--accent);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.cheat-badge--muted {
+  background: rgba(139, 148, 158, 0.12);
+  color: var(--muted);
+}
+
+.cheat-path {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cheat-path__step {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.cheat-path__head {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.cheat-path__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 6px;
+  background: var(--accent-dim);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.cheat-path__step h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.cheat-path__keys {
+  margin: 0.2rem 0 0;
+  color: var(--focus-ring);
+  font-size: 0.85rem;
+}
+
+.cheat-path__play {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.cheat-layout {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.cheat-appendix {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cheat-appendix li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  align-items: baseline;
+}
+
+.golden-path {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 1rem;
+}
+
+.golden-path h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.golden-path__strip {
+  display: grid;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .golden-path__strip {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.golden-path__step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+
+.golden-path__step:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+.golden-path__step-num {
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.golden-path__step-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.golden-path__step-keys {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.level-card__agent-tip {
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.play-agent-tip {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--accent);
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 2.5rem;
+}
+
+@media (max-width: 640px) {
+  .site-header__nav {
+    display: none;
+  }
+
+  .cheat-table {
+    font-size: 0.78rem;
+  }
+
+  .cheat-table th:nth-child(4),
+  .cheat-table td:nth-child(4) {
+    display: none;
   }
 }
