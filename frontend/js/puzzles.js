@@ -45,11 +45,6 @@ export function goalSnapshot(puzzle) {
   return normalizeSnapshot(puzzle.goal);
 }
 
-/** @param {Puzzle[]} puzzles */
-export function listPuzzlesByPath(puzzles = PUZZLES) {
-  return [...puzzles].sort((a, b) => a.pathOrder - b.pathOrder);
-}
-
 export const PUZZLES = /** @type {Puzzle[]} */ ([
   {
     id: 1,
@@ -260,4 +255,9 @@ export function getPuzzle(id) {
 
 export function listPuzzles() {
   return PUZZLES;
+}
+
+/** @param {Puzzle[]} [puzzles] */
+export function listPuzzlesByPath(puzzles = PUZZLES) {
+  return [...puzzles].sort((a, b) => a.pathOrder - b.pathOrder);
 }
