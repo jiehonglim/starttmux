@@ -25,7 +25,7 @@ function boot() {
   const mobile = isMobileMode();
 
   if (!puzzle || !root || !overlay) {
-    window.location.href = '/index.html';
+    window.location.href = 'index.html';
     return;
   }
 
@@ -61,7 +61,7 @@ function boot() {
 
   if (mobile) {
     if (!touchPanel || !puzzle.mobile) {
-      window.location.href = `/play.html?level=${levelId}&mode=desktop`;
+      window.location.href = `play.html?level=${levelId}&mode=desktop`;
       return;
     }
     touchPanel.hidden = false;
