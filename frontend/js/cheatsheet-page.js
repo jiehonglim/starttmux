@@ -7,7 +7,7 @@ import {
   WORKFLOW_INTRO,
   goldenPathSteps,
 } from './reference.js';
-import { listPuzzles, listPuzzlesByPath } from './puzzles.js';
+import { listPuzzles, listPuzzlesByPath } from './puzzles.js?v=20260628a';
 import { isMobileMode } from './device.js';
 
 function escapeHtml(s) {

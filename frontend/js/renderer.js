@@ -1,6 +1,6 @@
 import { activeWindow, getFocusedPane } from './state.js';
 import { nextPathLevel } from './reference.js';
-import { listPuzzles } from './puzzles.js';
+import { listPuzzles } from './puzzles.js?v=20260628a';
 
 /** @param {HTMLElement} root @param {import('./state.js').Session} session */
 export function renderSession(root, session) {

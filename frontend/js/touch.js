@@ -1,6 +1,6 @@
 import { applyTmuxKey } from './interpreter.js';
 import { snapshot, snapshotsEqual } from './state.js';
-import { goalSnapshot } from './puzzles.js';
+import { goalSnapshot } from './puzzles.js?v=20260628a';
 import { recordWrongKey, markComplete, saveCompletedMobile } from './scoring.js';
 import { renderSession, showWinOverlay, flashPane } from './renderer.js';
 import { labelForKey } from './keycaps.js';
