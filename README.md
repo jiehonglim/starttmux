@@ -7,7 +7,7 @@ Learn tmux by playing — a free browser puzzle game.
 
 ## What it is
 
-Five-step **golden path** for AI coders managing coding agents in tmux. Plus a [cheat sheet](https://minitcp.com/projects/starttmux/cheatsheet.html). No login, no paywall. Build tmux muscle memory on desktop (keyboard) or mobile (tap keycaps in order).
+**Cheat sheet**, **10 learn puzzles** (golden path + level up), and a **simulator** with fake Grok Build, Hermes, and Claude Code agents. No login, no paywall. Desktop keyboard or mobile tap controls.
 
 - **Desktop:** prefix is **Ctrl+b**, then the tmux key (e.g. `%` to split vertically)
 - **Mobile:** tap **⌃ b** and the shortcut keycaps in order (`?mode=mobile` to test on desktop)

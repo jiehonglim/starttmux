@@ -1,8 +1,8 @@
 import { applyTmuxKey, isPrefixChord, keyFromEvent } from './interpreter.js';
 import { snapshot, snapshotsEqual } from './state.js';
-import { goalSnapshot } from './puzzles.js?v=20260628a';
+import { goalSnapshot } from './puzzles.js?v=20260628b';
 import { recordWrongKey, markComplete, saveCompleted } from './scoring.js';
-import { renderSession, showWinOverlay, flashPane } from './renderer.js';
+import { renderSession, showWinOverlay, flashPane, winNavigation } from './renderer.js';
 
 const PREFIX_TIMEOUT_MS = 1000;
 
@@ -57,7 +57,8 @@ export function attachInput(opts) {
     game.session.prefixPending = false;
 
     const before = snapshot(game.session);
-    const { ok, action } = applyTmuxKey(game.session, key);
+    const renameName = puzzle.goal.windows[game.session.activeWindow]?.name;
+    const { ok, action } = applyTmuxKey(game.session, key, { renameName });
 
     if (!ok) {
       recordWrongKey(game.score);
@@ -80,8 +81,27 @@ export function attachInput(opts) {
     }
   }
 
+  function handleWinOverlayKey(event) {
+    const tag = event.target?.tagName?.toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      window.location.href = winNavigation(puzzle, 'desktop').nextHref;
+      return;
+    }
+
+    if (event.key === 'r' || event.key === 'R') {
+      event.preventDefault();
+      onRetry?.();
+    }
+  }
+
   function onKeyDown(event) {
-    if (game.score.completed) return;
+    if (game.score.completed) {
+      handleWinOverlayKey(event);
+      return;
+    }
 
     const tag = event.target?.tagName?.toLowerCase();
     if (tag === 'input' || tag === 'textarea') return;

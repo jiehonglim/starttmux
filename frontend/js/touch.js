@@ -1,6 +1,6 @@
 import { applyTmuxKey } from './interpreter.js';
 import { snapshot, snapshotsEqual } from './state.js';
-import { goalSnapshot } from './puzzles.js?v=20260628a';
+import { goalSnapshot } from './puzzles.js?v=20260628b';
 import { recordWrongKey, markComplete, saveCompletedMobile } from './scoring.js';
 import { renderSession, showWinOverlay, flashPane } from './renderer.js';
 import { labelForKey } from './keycaps.js';
@@ -92,7 +92,8 @@ export function attachTouchInput(opts) {
     }
 
     game.session.prefixPending = false;
-    const { ok, action } = applyTmuxKey(game.session, key);
+    const renameName = puzzle.goal.windows[game.session.activeWindow]?.name;
+    const { ok, action } = applyTmuxKey(game.session, key, { renameName });
     stepIndex += 1;
     renderProgress();
     renderSession(root, game.session);

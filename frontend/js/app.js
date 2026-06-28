@@ -1,5 +1,5 @@
 import { createSession } from './state.js';
-import { getPuzzle } from './puzzles.js?v=20260628a';
+import { getPuzzle } from './puzzles.js?v=20260628b';
 import { createScoring, formatTime } from './scoring.js';
 import { renderSession, hideWinOverlay } from './renderer.js';
 import { attachInput } from './input.js';

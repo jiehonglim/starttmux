@@ -1,5 +1,5 @@
-/** @typedef {{ id: string, r: number, c: number, h: number, w: number, label?: string }} Pane */
-/** @typedef {{ name: string, panes: Pane[] }} Window */
+/** @typedef {{ id: string, r: number, c: number, h: number, w: number, label?: string, focused?: boolean }} Pane */
+/** @typedef {{ name: string, panes: Pane[], zoomedPaneId?: string | null, _zoomBackup?: { id: string, r: number, c: number, h: number, w: number }[] }} Window */
 /** @typedef {{ windows: Window[], activeWindow: number, prefixPending: boolean }} Session */
 
 let paneCounter = 0;
@@ -17,6 +17,7 @@ export function createSession(start) {
   resetPaneCounter(0);
   const windows = start.windows.map((w) => ({
     name: w.name,
+    zoomedPaneId: null,
     panes: w.panes.map((p) => ({
       id: p.id ?? nextPaneId(),
       r: p.r,
@@ -227,6 +228,70 @@ export function selectWindow(session, index) {
   return true;
 }
 
+/** @param {Window} win */
+export function closeFocusedPane(win) {
+  if (win.panes.length <= 1) return false;
+  const focused = getFocusedPane(win);
+  if (!focused) return false;
+
+  win.panes = win.panes.filter((p) => p.id !== focused.id);
+  win.zoomedPaneId = null;
+  delete win._zoomBackup;
+
+  if (win.panes.length === 1) {
+    const survivor = win.panes[0];
+    survivor.r = 0;
+    survivor.c = 0;
+    survivor.h = 100;
+    survivor.w = 100;
+    survivor.focused = true;
+  } else {
+    win.panes[0].focused = true;
+    for (let i = 1; i < win.panes.length; i++) win.panes[i].focused = false;
+  }
+  return true;
+}
+
+/** @param {Window} win */
+export function toggleZoom(win) {
+  const focused = getFocusedPane(win);
+  if (!focused) return false;
+
+  if (win.zoomedPaneId) {
+    if (win._zoomBackup) {
+      for (const pane of win.panes) {
+        const backup = win._zoomBackup.find((b) => b.id === pane.id);
+        if (backup) {
+          pane.r = backup.r;
+          pane.c = backup.c;
+          pane.h = backup.h;
+          pane.w = backup.w;
+        }
+      }
+      delete win._zoomBackup;
+    }
+    win.zoomedPaneId = null;
+    return true;
+  }
+
+  win._zoomBackup = win.panes.map((p) => ({
+    id: p.id,
+    r: p.r,
+    c: p.c,
+    h: p.h,
+    w: p.w,
+  }));
+  win.zoomedPaneId = focused.id;
+  return true;
+}
+
+/** @param {Window} win @param {string} name */
+export function renameWindow(win, name) {
+  if (!name?.trim()) return false;
+  win.name = name.trim();
+  return true;
+}
+
 /** @param {Session} session */
 export function activeWindow(session) {
   return session.windows[session.activeWindow];
@@ -238,6 +303,7 @@ export function snapshot(session) {
     activeWindow: session.activeWindow,
     windows: session.windows.map((w) => ({
       name: w.name,
+      zoomedPaneId: w.zoomedPaneId ?? null,
       panes: w.panes
         .map((p) => ({
           id: p.id,

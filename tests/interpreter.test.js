@@ -20,7 +20,8 @@ for (const puzzle of PUZZLES) {
   test(`puzzle ${puzzle.id}: ${puzzle.title} — accepted solutions reach goal`, () => {
     for (const solution of puzzle.acceptedSolutions) {
       const session = createSession(puzzle.start);
-      replaySequence(session, solution);
+      const renameName = puzzle.goal.windows[puzzle.goal.activeWindow ?? 0]?.name;
+      replaySequence(session, solution, { renameName });
       const got = snapshot(session);
       const want = goalSnapshot(puzzle);
       assert.deepEqual(got, want, `solution ${solution.join(' ')}`);

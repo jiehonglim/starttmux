@@ -6,6 +6,9 @@ import {
   prevWindow,
   selectWindow,
   activeWindow,
+  closeFocusedPane,
+  toggleZoom,
+  renameWindow,
 } from './state.js';
 
 const ARROW_MAP = {
@@ -15,8 +18,8 @@ const ARROW_MAP = {
   ArrowDown: 'down',
 };
 
-/** @param {import('./state.js').Session} session @param {string} key */
-export function applyTmuxKey(session, key) {
+/** @param {import('./state.js').Session} session @param {string} key @param {{ renameName?: string }} [opts] */
+export function applyTmuxKey(session, key, opts = {}) {
   const win = activeWindow(session);
   if (!win) return { ok: false, action: null };
 
@@ -40,6 +43,17 @@ export function applyTmuxKey(session, key) {
   }
   if (/^[0-9]$/.test(key)) {
     return { ok: selectWindow(session, Number(key)), action: 'select-window' };
+  }
+  if (key === 'x') {
+    return { ok: closeFocusedPane(win), action: 'close-pane' };
+  }
+  if (key === 'z') {
+    return { ok: toggleZoom(win), action: 'zoom' };
+  }
+  if (key === ',') {
+    const name = opts.renameName;
+    if (!name) return { ok: false, action: null };
+    return { ok: renameWindow(win, name), action: 'rename' };
   }
 
   return { ok: false, action: null };
@@ -80,7 +94,7 @@ export function keyFromEvent(event) {
 }
 
 /** Replay a sequence of keys after prefix for tests. Keys are post-prefix tokens. */
-export function replaySequence(session, keys) {
+export function replaySequence(session, keys, opts = {}) {
   const results = [];
   for (const key of keys) {
     if (key === 'C-b' || key === 'prefix') {
@@ -93,7 +107,7 @@ export function replaySequence(session, keys) {
       continue;
     }
     session.prefixPending = false;
-    const result = applyTmuxKey(session, key);
+    const result = applyTmuxKey(session, key, opts);
     results.push({ key, ...result });
   }
   return results;

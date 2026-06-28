@@ -12,6 +12,9 @@ export const KEYCAP_LABELS = {
   ArrowRight: '→',
   ArrowUp: '↑',
   ArrowDown: '↓',
+  x: 'x',
+  z: 'z',
+  ',': ',',
 };
 
 /** @param {string} key */

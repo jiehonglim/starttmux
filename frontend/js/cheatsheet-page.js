@@ -2,12 +2,15 @@ import {
   PREFIX_NOTE,
   PANE_SHORTCUTS,
   WINDOW_SHORTCUTS,
+  PANE_MGMT_SHORTCUTS,
+  FILE_COMMANDS,
   APPENDIX_COMMANDS,
   LAYOUT_ASCII,
   WORKFLOW_INTRO,
   goldenPathSteps,
+  levelUpSteps,
 } from './reference.js';
-import { listPuzzles, listPuzzlesByPath } from './puzzles.js?v=20260628a';
+import { listPuzzles, listPuzzlesByPath } from './puzzles.js?v=20260628b';
 import { isMobileMode } from './device.js';
 
 function escapeHtml(s) {
@@ -36,11 +39,32 @@ function renderShortcutTable(rows) {
             <td class="cheat-table__keys">${renderKeys(row.keys)}</td>
             <td>${escapeHtml(row.action)}</td>
             <td class="cheat-table__when">${escapeHtml(row.when)}</td>
-            <td>${row.inGame ? '<span class="cheat-badge">in game</span>' : '<span class="cheat-badge cheat-badge--muted">reference</span>'}</td>
+            <td>${row.inGame ? '<span class="cheat-badge">in game</span>' : '<span class="cheat-badge cheat-badge--muted">simulator</span>'}</td>
           </tr>
         `).join('')}
       </tbody>
     </table>
+  `;
+}
+
+/** @param {ReturnType<typeof goldenPathSteps>} steps @param {string} mode */
+function renderPathList(steps, mode) {
+  return `
+    <ol class="cheat-path">
+      ${steps.map((step) => `
+        <li class="cheat-path__step">
+          <div class="cheat-path__head">
+            <span class="cheat-path__num">${step.pathOrder}</span>
+            <div>
+              <h3>${escapeHtml(step.pathTitle)}</h3>
+              <p class="cheat-path__keys">${escapeHtml(step.shortcut)}</p>
+            </div>
+          </div>
+          <p>${escapeHtml(step.agentTip)}</p>
+          <a href="play.html?level=${step.levelId}&mode=${mode}" class="btn cheat-path__play">Play step ${step.pathOrder}</a>
+        </li>
+      `).join('')}
+    </ol>
   `;
 }
 
@@ -50,7 +74,8 @@ function boot() {
 
   const mobile = isMobileMode();
   const mode = mobile ? 'mobile' : 'desktop';
-  const steps = goldenPathSteps(listPuzzles());
+  const golden = goldenPathSteps(listPuzzles());
+  const levelup = levelUpSteps(listPuzzles());
 
   root.innerHTML = `
     <section class="cheat-hero">
@@ -68,22 +93,14 @@ function boot() {
 
     <section class="cheat-section">
       <h2>Golden path</h2>
-      <p class="cheat-muted">Five puzzles in the order AI coders actually adopt tmux. Level IDs stay stable — follow the path, not the number.</p>
-      <ol class="cheat-path">
-        ${steps.map((step) => `
-          <li class="cheat-path__step">
-            <div class="cheat-path__head">
-              <span class="cheat-path__num">${step.pathOrder}</span>
-              <div>
-                <h3>${escapeHtml(step.pathTitle)}</h3>
-                <p class="cheat-path__keys">${escapeHtml(step.shortcut)}</p>
-              </div>
-            </div>
-            <p>${escapeHtml(step.agentTip)}</p>
-            <a href="play.html?level=${step.levelId}&mode=${mode}" class="btn cheat-path__play">Play step ${step.pathOrder}</a>
-          </li>
-        `).join('')}
-      </ol>
+      <p class="cheat-muted">Five puzzles for agent + shell + logs. Level IDs stay stable — follow the path order.</p>
+      ${renderPathList(golden, mode)}
+    </section>
+
+    <section class="cheat-section">
+      <h2>Level up</h2>
+      <p class="cheat-muted">Five more puzzles — close, zoom, rename, and the full control-room layout.</p>
+      ${renderPathList(levelup, mode)}
     </section>
 
     <section class="cheat-section">
@@ -97,13 +114,24 @@ function boot() {
     </section>
 
     <section class="cheat-section">
+      <h2>Pane management</h2>
+      ${renderShortcutTable(PANE_MGMT_SHORTCUTS)}
+    </section>
+
+    <section class="cheat-section">
+      <h2>File basics (simulator)</h2>
+      <p class="cheat-muted">Practice these in the <a href="simulator.html">simulator</a> — a fake project, nothing touches your machine.</p>
+      ${renderShortcutTable(FILE_COMMANDS)}
+    </section>
+
+    <section class="cheat-section">
       <h2>${escapeHtml(WORKFLOW_INTRO.title)}</h2>
       <pre class="cheat-layout" aria-label="Recommended tmux layout">${escapeHtml(LAYOUT_ASCII)}</pre>
     </section>
 
     <section class="cheat-section cheat-section--appendix">
       <h2>Next in real tmux</h2>
-      <p class="cheat-muted">Not in the simulator yet — learn these after the golden path.</p>
+      <p class="cheat-muted">Copy mode and detach — try detach after the easter egg in the simulator.</p>
       <ul class="cheat-appendix">
         ${APPENDIX_COMMANDS.map((cmd) => `
           <li>
@@ -116,8 +144,9 @@ function boot() {
     </section>
 
     <footer class="site-footer">
-      <a href="index.html" class="btn btn--ghost">← Golden path</a>
-      <a href="play.html?level=${listPuzzlesByPath()[0].id}&mode=${mode}" class="btn">Start step 1</a>
+      <a href="index.html" class="btn btn--ghost">← Learn</a>
+      <a href="simulator.html" class="btn">Open simulator</a>
+      <a href="play.html?level=${listPuzzlesByPath()[0].id}&mode=${mode}" class="btn btn--ghost">Start step 1</a>
     </footer>
   `;
 }

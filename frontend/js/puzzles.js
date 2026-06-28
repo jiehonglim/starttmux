@@ -1,10 +1,11 @@
 /** @typedef {{ id?: string, r: number, c: number, h: number, w: number, label?: string, focused?: boolean }} PaneDef */
-/** @typedef {{ name: string, panes: PaneDef[] }} WindowDef */
+/** @typedef {{ name: string, panes: PaneDef[], zoomedPaneId?: string | null }} WindowDef */
 /** @typedef {{ windows: WindowDef[], activeWindow?: number }} PuzzleStart */
 /** @typedef {{ windows: WindowDef[], activeWindow: number }} PuzzleGoal */
 
 /** @typedef {{
  *   id: number,
+ *   track: 'golden' | 'levelup',
  *   pathOrder: number,
  *   pathTitle: string,
  *   title: string,
@@ -26,6 +27,7 @@ function normalizeSnapshot(raw) {
     activeWindow: raw.activeWindow ?? 0,
     windows: raw.windows.map((w) => ({
       name: w.name,
+      zoomedPaneId: w.zoomedPaneId ?? null,
       panes: w.panes
         .map((p) => ({
           id: p.id ?? 'p0',
@@ -48,6 +50,7 @@ export function goalSnapshot(puzzle) {
 export const PUZZLES = /** @type {Puzzle[]} */ ([
   {
     id: 1,
+    track: 'golden',
     pathOrder: 1,
     pathTitle: 'Side-by-side',
     title: 'Side-by-side',
@@ -84,6 +87,7 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
   },
   {
     id: 2,
+    track: 'golden',
     pathOrder: 2,
     pathTitle: 'Check the agent',
     title: 'Check the agent',
@@ -125,6 +129,7 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
   },
   {
     id: 3,
+    track: 'golden',
     pathOrder: 4,
     pathTitle: 'New agent window',
     title: 'New agent window',
@@ -167,6 +172,7 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
   },
   {
     id: 4,
+    track: 'golden',
     pathOrder: 3,
     pathTitle: 'Logs below',
     title: 'Logs below',
@@ -203,6 +209,7 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
   },
   {
     id: 5,
+    track: 'golden',
     pathOrder: 5,
     pathTitle: 'Flip agents',
     title: 'Flip agents',
@@ -246,6 +253,206 @@ export const PUZZLES = /** @type {Puzzle[]} */ ([
       hint: 'Tap ⌃ b, then n to flip to the other agent window.',
     },
   },
+  {
+    id: 6,
+    track: 'levelup',
+    pathOrder: 1,
+    pathTitle: 'Close finished pane',
+    title: 'Close finished pane',
+    bucket: 'Level up · step 1',
+    hint: 'Kill a stale pane with prefix + x — the survivor expands to fill the window.',
+    agentTip: 'Close agent panes when the job is done so your layout stays readable.',
+    shortcut: '⌃ b x',
+    estSeconds: 45,
+    start: {
+      windows: [{
+        name: 'agent',
+        panes: [
+          { id: 'p0', r: 0, c: 0, h: 100, w: 50, label: 'agent', focused: true },
+          { id: 'p1', r: 0, c: 50, h: 100, w: 50, label: 'shell', focused: false },
+        ],
+      }],
+      activeWindow: 0,
+    },
+    goal: {
+      activeWindow: 0,
+      windows: [{
+        name: 'agent',
+        panes: [
+          { id: 'p1', r: 0, c: 0, h: 100, w: 100, focused: true, label: 'shell' },
+        ],
+      }],
+    },
+    acceptedSolutions: [['prefix', 'x']],
+    minSteps: 2,
+    mobile: {
+      type: 'sequence',
+      steps: ['prefix', 'x'],
+      keycaps: ['prefix', 'x', '%', '"'],
+      hint: 'Tap ⌃ b, then x to close the focused agent pane.',
+    },
+  },
+  {
+    id: 7,
+    track: 'levelup',
+    pathOrder: 2,
+    pathTitle: 'Zoom the transcript',
+    title: 'Zoom the transcript',
+    bucket: 'Level up · step 2',
+    hint: 'Zoom the focused pane with prefix + z — fullscreen one stream while jobs run elsewhere.',
+    agentTip: 'Zoom agent output when you need to read a long stack trace, then zoom out to check logs.',
+    shortcut: '⌃ b z',
+    estSeconds: 45,
+    start: {
+      windows: [{
+        name: 'agent',
+        panes: [
+          { id: 'p0', r: 0, c: 0, h: 100, w: 50, label: 'agent', focused: true },
+          { id: 'p1', r: 0, c: 50, h: 100, w: 50, label: 'logs', focused: false },
+        ],
+      }],
+      activeWindow: 0,
+    },
+    goal: {
+      activeWindow: 0,
+      windows: [{
+        name: 'agent',
+        zoomedPaneId: 'p0',
+        panes: [
+          { id: 'p0', r: 0, c: 0, h: 100, w: 50, focused: true, label: 'agent' },
+          { id: 'p1', r: 0, c: 50, h: 100, w: 50, focused: false, label: 'logs' },
+        ],
+      }],
+    },
+    acceptedSolutions: [['prefix', 'z']],
+    minSteps: 2,
+    mobile: {
+      type: 'sequence',
+      steps: ['prefix', 'z'],
+      keycaps: ['prefix', 'z', 'ArrowLeft', 'ArrowRight'],
+      hint: 'Tap ⌃ b, then z to zoom the agent pane.',
+    },
+  },
+  {
+    id: 8,
+    track: 'levelup',
+    pathOrder: 3,
+    pathTitle: 'Previous window',
+    title: 'Previous window',
+    bucket: 'Level up · step 3',
+    hint: 'Step back with prefix + p — the pair to next window from the golden path.',
+    agentTip: 'Flip backward when you overshoot with n, or when you want the prior project window.',
+    shortcut: '⌃ b p',
+    estSeconds: 45,
+    start: {
+      windows: [
+        {
+          name: 'agent',
+          panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'agent', focused: false }],
+        },
+        {
+          name: 'win1',
+          panes: [{ id: 'p1', r: 0, c: 0, h: 100, w: 100, label: 'agent2', focused: true }],
+        },
+      ],
+      activeWindow: 1,
+    },
+    goal: {
+      activeWindow: 0,
+      windows: [
+        {
+          name: 'agent',
+          panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, focused: true }],
+        },
+        {
+          name: 'win1',
+          panes: [{ id: 'p1', r: 0, c: 0, h: 100, w: 100, focused: false }],
+        },
+      ],
+    },
+    acceptedSolutions: [['prefix', 'p'], ['prefix', '0']],
+    minSteps: 2,
+    mobile: {
+      type: 'sequence',
+      steps: ['prefix', 'p'],
+      keycaps: ['prefix', 'p', 'n', '0', '1'],
+      hint: 'Tap ⌃ b, then p to return to the first agent window.',
+    },
+  },
+  {
+    id: 9,
+    track: 'levelup',
+    pathOrder: 4,
+    pathTitle: 'Name your windows',
+    title: 'Name your windows',
+    bucket: 'Level up · step 4',
+    hint: 'Rename the active window with prefix + , — labels stick in the status bar.',
+    agentTip: 'Name windows agent, tests, and deploy so you never land in the wrong session.',
+    shortcut: '⌃ b ,',
+    estSeconds: 30,
+    start: {
+      windows: [{
+        name: 'win0',
+        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'agent', focused: true }],
+      }],
+      activeWindow: 0,
+    },
+    goal: {
+      activeWindow: 0,
+      windows: [{
+        name: 'agent',
+        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, focused: true }],
+      }],
+    },
+    acceptedSolutions: [['prefix', ',']],
+    minSteps: 2,
+    mobile: {
+      type: 'sequence',
+      steps: ['prefix', ','],
+      keycaps: ['prefix', ',', 'c', 'n'],
+      hint: 'Tap ⌃ b, then , to rename this window to agent.',
+    },
+  },
+  {
+    id: 10,
+    track: 'levelup',
+    pathOrder: 5,
+    pathTitle: 'Control room',
+    title: 'Control room',
+    bucket: 'Level up · step 5',
+    hint: 'Build the agent control room: split horizontally for logs, focus up, split vertically for shell.',
+    agentTip: 'This is the layout from the cheat sheet — agent, shell, and streaming logs in one window.',
+    shortcut: '⌃ b " then ⌃ b %',
+    estSeconds: 120,
+    start: {
+      windows: [{
+        name: 'agent',
+        panes: [{ id: 'p0', r: 0, c: 0, h: 100, w: 100, label: 'agent', focused: true }],
+      }],
+      activeWindow: 0,
+    },
+    goal: {
+      activeWindow: 0,
+      windows: [{
+        name: 'agent',
+        panes: [
+          { id: 'p0', r: 0, c: 0, h: 50, w: 50, focused: false, label: 'agent' },
+          { id: 'p1', r: 50, c: 0, h: 50, w: 100, focused: false, label: 'logs' },
+          { id: 'p2', r: 0, c: 50, h: 50, w: 50, focused: true, label: 'shell' },
+        ],
+      }],
+    },
+    acceptedSolutions: [
+      ['prefix', '"', 'prefix', 'ArrowUp', 'prefix', '%'],
+    ],
+    minSteps: 6,
+    mobile: {
+      type: 'sequence',
+      steps: ['prefix', '"', 'prefix', 'ArrowUp', 'prefix', '%'],
+      keycaps: ['prefix', '"', 'ArrowUp', 'ArrowDown', 'prefix', '%', 'ArrowLeft'],
+      hint: 'Tap ⌃ b ", then ⌃ b ↑, then ⌃ b % to build the three-pane layout.',
+    },
+  },
 ]);
 
 /** @param {number} id */
@@ -257,7 +464,9 @@ export function listPuzzles() {
   return PUZZLES;
 }
 
-/** @param {Puzzle[]} [puzzles] */
-export function listPuzzlesByPath(puzzles = PUZZLES) {
-  return [...puzzles].sort((a, b) => a.pathOrder - b.pathOrder);
+/** @param {Puzzle[]} [puzzles] @param {'golden' | 'levelup'} [track] */
+export function listPuzzlesByPath(puzzles = PUZZLES, track = 'golden') {
+  return puzzles
+    .filter((p) => p.track === track)
+    .sort((a, b) => a.pathOrder - b.pathOrder);
 }

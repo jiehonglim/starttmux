@@ -9,7 +9,8 @@ for (const puzzle of PUZZLES) {
   test(`mobile steps puzzle ${puzzle.id}: ${puzzle.title}`, () => {
     assert.ok(puzzle.mobile?.steps?.length, 'mobile config required');
     const session = createSession(puzzle.start);
-    replaySequence(session, puzzle.mobile.steps);
+    const renameName = puzzle.goal.windows[puzzle.goal.activeWindow ?? 0]?.name;
+    replaySequence(session, puzzle.mobile.steps, { renameName });
     assert.deepEqual(snapshot(session), goalSnapshot(puzzle));
   });
 }

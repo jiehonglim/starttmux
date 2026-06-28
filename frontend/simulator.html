@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Play — StartTmux</title>
+  <title>Simulator — StartTmux</title>
   <link rel="stylesheet" href="css/terminal.css">
 </head>
 <body>
@@ -12,37 +12,37 @@
     <nav class="site-header__nav">
       <a href="cheatsheet.html" class="site-header__link">Cheat sheet</a>
       <a href="index.html" class="site-header__link">Learn</a>
-      <a href="simulator.html" class="site-header__link">Simulator</a>
+      <a href="simulator.html" class="site-header__link site-header__link--active">Simulator</a>
     </nav>
+    <span class="site-header__badge" data-egg-badge hidden>easter egg</span>
     <button type="button" class="btn btn--ghost" id="theme-toggle">Theme</button>
   </header>
 
-  <main class="play-layout">
-    <div class="play-header">
-      <h1 data-title>Loading…</h1>
-      <p data-hint></p>
-      <p class="play-agent-tip" data-agent-tip hidden></p>
-    </div>
+  <section class="sim-hero">
+    <h1>Tmux simulator</h1>
+    <p>Split with <kbd>⌃ b %</kbd>. Spawn <code>grok-build</code>, <code>hermes</code>, or <code>claude-code</code>. Run <code>npm test</code> in another pane. <a href="index.html">Learn the golden path</a> first if you are new.</p>
+  </section>
 
-    <div class="terminal" data-terminal tabindex="0">
-      <div class="terminal__board" data-board aria-label="tmux pane layout"></div>
+  <main class="play-layout">
+    <div class="terminal terminal--sim" data-terminal tabindex="0">
+      <div class="terminal__board" data-board aria-label="tmux simulator"></div>
       <div class="status" data-status>
         <span class="status__prefix" data-prefix></span>
         <span class="status__windows" data-windows></span>
-        <span class="status__hint mode-desktop-only">Ctrl+b = prefix</span>
+        <span class="status__flair" data-flair hidden></span>
+        <span class="status__hint mode-desktop-only">type commands · ⌃ b = prefix · ⌃ c = stop</span>
       </div>
     </div>
 
     <section class="touch-panel" data-touch-panel hidden aria-label="Touch controls">
-      <p class="touch-panel__label">Tap the shortcut in order</p>
-      <div class="touch-panel__sequence" data-sequence></div>
+      <p class="touch-panel__label">Tmux shortcuts</p>
       <div class="touch-panel__keycaps" data-keycaps></div>
     </section>
+
+    <section class="script-dock" data-script-dock aria-label="Run scripts"></section>
   </main>
 
-  <div class="overlay" data-overlay hidden></div>
-
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/sim-app.js"></script>
   <script>
     document.getElementById('theme-toggle')?.addEventListener('click', () => {
       const html = document.documentElement;

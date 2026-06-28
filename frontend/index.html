@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StartTmux — learn tmux by playing</title>
-  <meta name="description" content="Golden path tmux puzzles for AI coders. Build muscle memory for managing coding agents.">
+  <meta name="description" content="Golden path tmux puzzles, level-up drills, and a free simulator for AI coders.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%96%A3</text></svg>">
   <link rel="stylesheet" href="css/terminal.css">
 </head>
@@ -13,69 +13,89 @@
     <a href="index.html" class="site-header__brand">start<span>tmux</span></a>
     <nav class="site-header__nav">
       <a href="cheatsheet.html" class="site-header__link">Cheat sheet</a>
-      <a href="index.html" class="site-header__link site-header__link--active">Play</a>
+      <a href="index.html" class="site-header__link site-header__link--active">Learn</a>
+      <a href="simulator.html" class="site-header__link">Simulator</a>
     </nav>
     <button type="button" class="btn btn--ghost" id="theme-toggle" aria-label="Toggle theme">Theme</button>
   </header>
 
   <section class="hero">
-    <h1>Golden path for AI coders</h1>
-    <p id="hero-copy">Run agents in tmux without losing your place — five practice steps, all unlocked. Keyboard on desktop, tap shortcuts on mobile.</p>
+    <h1>Three ways to learn tmux</h1>
+    <p id="hero-copy">Cheat sheet for reference, ten guided puzzles, then a simulator to freestyle with fake agents and scripts — no real terminal required.</p>
   </section>
 
-  <section class="golden-path" aria-label="Golden path overview">
-    <h2>Learn in order</h2>
+  <section class="learn-pillars" aria-label="Learning modes">
+    <a href="cheatsheet.html" class="learn-pillar">Cheat sheet</a>
+    <a href="#golden-path" class="learn-pillar learn-pillar--active">Learn</a>
+    <a href="simulator.html" class="learn-pillar">Simulator</a>
+  </section>
+
+  <section class="golden-path" id="golden-path" aria-label="Golden path">
+    <h2>Golden path</h2>
+    <p class="section-lead">Five steps for AI coders — splits, focus, windows. All unlocked.</p>
     <div class="golden-path__strip" id="golden-path-strip"></div>
+    <div class="level-grid" id="golden-grid"></div>
   </section>
 
-  <div class="level-grid" id="level-grid"></div>
+  <section class="golden-path levelup-section" id="level-up" aria-label="Level up">
+    <h2>Level up</h2>
+    <p class="section-lead">Close panes, zoom, rename, and build the full control-room layout.</p>
+    <div class="golden-path__strip" id="levelup-strip"></div>
+    <div class="level-grid" id="levelup-grid"></div>
+  </section>
 
   <footer class="site-footer">
-    <a href="cheatsheet.html" class="btn btn--ghost">Cheat sheet →</a>
+    <a href="simulator.html" class="btn">Open simulator →</a>
+    <a href="cheatsheet.html" class="btn btn--ghost">Cheat sheet</a>
   </footer>
 
   <script type="module">
-    import { listPuzzlesByPath } from './js/puzzles.js?v=20260628a';
+    import { listPuzzlesByPath } from './js/puzzles.js?v=20260628b';
     import { loadCompleted, loadCompletedMobile, formatTime } from './js/scoring.js';
     import { isMobileMode } from './js/device.js';
 
     const mobile = isMobileMode();
     const completed = mobile ? loadCompletedMobile() : loadCompleted();
-    const grid = document.getElementById('level-grid');
-    const pathStrip = document.getElementById('golden-path-strip');
-    const puzzles = listPuzzlesByPath();
+    const mode = mobile ? 'mobile' : 'desktop';
 
     if (mobile) {
       document.getElementById('hero-copy').textContent =
-        'Five touch steps — tap ⌃ b and tmux keys in order. Same golden path as desktop.';
+        'Ten touch puzzles plus a simulator with tap-to-run agents and scripts.';
     }
 
-    const mode = mobile ? 'mobile' : 'desktop';
+    function renderTrack(track, stripId, gridId) {
+      const strip = document.getElementById(stripId);
+      const grid = document.getElementById(gridId);
+      const puzzles = listPuzzlesByPath(undefined, track);
 
-    for (const puzzle of puzzles) {
-      const done = completed[String(puzzle.id)];
+      for (const puzzle of puzzles) {
+        const done = completed[String(puzzle.id)];
 
-      const step = document.createElement('a');
-      step.className = 'golden-path__step';
-      step.href = `play.html?level=${puzzle.id}&mode=${mode}`;
-      step.innerHTML = `
-        <span class="golden-path__step-num">Step ${puzzle.pathOrder}</span>
-        <span class="golden-path__step-title">${puzzle.pathTitle}</span>
-        <span class="golden-path__step-keys">${puzzle.shortcut}</span>
-      `;
-      pathStrip.appendChild(step);
+        const step = document.createElement('a');
+        step.className = 'golden-path__step';
+        step.href = `play.html?level=${puzzle.id}&mode=${mode}`;
+        step.innerHTML = `
+          <span class="golden-path__step-num">Step ${puzzle.pathOrder}</span>
+          <span class="golden-path__step-title">${puzzle.pathTitle}</span>
+          <span class="golden-path__step-keys">${puzzle.shortcut}</span>
+        `;
+        strip.appendChild(step);
 
-      const card = document.createElement('article');
-      card.className = 'level-card' + (done ? ' level-card--done' : '');
-      card.innerHTML = `
-        <p class="level-card__bucket">${puzzle.bucket}</p>
-        <h2 class="level-card__title">${puzzle.pathTitle}</h2>
-        <p class="level-card__agent-tip">${puzzle.agentTip}</p>
-        <p class="level-card__meta">~${puzzle.estSeconds}s · ${puzzle.shortcut}${done ? ` · best ${formatTime(done.elapsedMs)}` : ''}</p>
-        <a href="play.html?level=${puzzle.id}&mode=${mode}" class="btn level-card__play">Play step ${puzzle.pathOrder}</a>
-      `;
-      grid.appendChild(card);
+        const card = document.createElement('article');
+        card.className = 'level-card' + (done ? ' level-card--done' : '');
+        card.innerHTML = `
+          <p class="level-card__bucket">${puzzle.bucket}</p>
+          <h2 class="level-card__title">${puzzle.pathTitle}</h2>
+          <p class="level-card__agent-tip">${puzzle.agentTip}</p>
+          <p class="level-card__meta">~${puzzle.estSeconds}s · ${puzzle.shortcut}${done ? ` · best ${formatTime(done.elapsedMs)}` : ''}</p>
+          <a href="play.html?level=${puzzle.id}&mode=${mode}" class="btn level-card__play">Play step ${puzzle.pathOrder}</a>
+        `;
+        grid.appendChild(card);
+      }
     }
+
+    renderTrack('golden', 'golden-path-strip', 'golden-grid');
+    renderTrack('levelup', 'levelup-strip', 'levelup-grid');
 
     document.getElementById('theme-toggle')?.addEventListener('click', () => {
       const html = document.documentElement;
