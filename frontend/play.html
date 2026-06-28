@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play — StartTmux</title>
+  <link rel="stylesheet" href="css/terminal.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="site-header__brand">start<span>tmux</span></a>
+    <button type="button" class="btn btn--ghost" id="theme-toggle">Theme</button>
+  </header>
+
+  <main class="play-layout">
+    <div class="play-header">
+      <h1 data-title>Loading…</h1>
+      <p data-hint></p>
+    </div>
+
+    <div class="terminal" data-terminal tabindex="0">
+      <div class="terminal__board" data-board aria-label="tmux pane layout"></div>
+      <div class="status" data-status>
+        <span class="status__prefix" data-prefix></span>
+        <span class="status__windows" data-windows></span>
+        <span class="status__hint mode-desktop-only">Ctrl+b = prefix</span>
+      </div>
+    </div>
+
+    <section class="touch-panel" data-touch-panel hidden aria-label="Touch controls">
+      <p class="touch-panel__label">Tap the shortcut in order</p>
+      <div class="touch-panel__sequence" data-sequence></div>
+      <div class="touch-panel__keycaps" data-keycaps></div>
+    </section>
+  </main>
+
+  <div class="overlay" data-overlay hidden></div>
+
+  <script type="module" src="js/app.js"></script>
+  <script>
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const html = document.documentElement;
+      const next = html.dataset.theme === 'light' ? 'dark' : 'light';
+      html.dataset.theme = next;
+      localStorage.setItem('starttmux_theme', next);
+    });
+    const saved = localStorage.getItem('starttmux_theme');
+    if (saved) document.documentElement.dataset.theme = saved;
+  </script>
+</body>
+</html>

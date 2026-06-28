@@ -1,0 +1,14 @@
+# Local env & runtime
+.env
+.dev/
+backend/data.db
+backend/data.db-journal
+.DS_Store
+
+# Private — studio / agents / deploy (local only; not published)
+AGENTS.md
+AGENTS.md.snippet
+studioplaybook.md
+DEPLOY.md
+deploy.sh
+deploy/

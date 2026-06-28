@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StartTmux — learn tmux by playing</title>
+  <meta name="description" content="A playful tmux puzzle game. Build muscle memory with keyboard-driven challenges.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%96%A3</text></svg>">
+  <link rel="stylesheet" href="css/terminal.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="site-header__brand">start<span>tmux</span></a>
+    <button type="button" class="btn btn--ghost" id="theme-toggle" aria-label="Toggle theme">Theme</button>
+  </header>
+
+  <section class="hero">
+    <h1>Learn tmux by playing</h1>
+    <p id="hero-copy">Five practice puzzles — all unlocked. Keyboard on desktop, tap shortcuts on mobile.</p>
+  </section>
+
+  <div class="level-grid" id="level-grid"></div>
+
+  <script type="module">
+    import { listPuzzles } from './js/puzzles.js';
+    import { loadCompleted, loadCompletedMobile, formatTime } from './js/scoring.js';
+    import { isMobileMode } from './js/device.js';
+
+    const mobile = isMobileMode();
+    const completed = mobile ? loadCompletedMobile() : loadCompleted();
+    const grid = document.getElementById('level-grid');
+
+    if (mobile) {
+      document.getElementById('hero-copy').textContent =
+        'Five touch puzzles — tap ⌃ b and the tmux keys in order.';
+    }
+
+    for (const puzzle of listPuzzles()) {
+      const done = completed[String(puzzle.id)];
+      const card = document.createElement('article');
+      card.className = 'level-card' + (done ? ' level-card--done' : '');
+
+      const mode = mobile ? 'mobile' : 'desktop';
+      card.innerHTML = `
+        <p class="level-card__bucket">${puzzle.bucket}</p>
+        <h2 class="level-card__title">${puzzle.title}</h2>
+        <p class="level-card__meta">~${puzzle.estSeconds}s${done ? ` · best ${formatTime(done.elapsedMs)}` : ''}</p>
+        <a href="play.html?level=${puzzle.id}&mode=${mode}" class="btn level-card__play">Play</a>
+      `;
+      grid.appendChild(card);
+    }
+
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const html = document.documentElement;
+      const next = html.dataset.theme === 'light' ? 'dark' : 'light';
+      html.dataset.theme = next;
+      localStorage.setItem('starttmux_theme', next);
+    });
+
+    const saved = localStorage.getItem('starttmux_theme');
+    if (saved) document.documentElement.dataset.theme = saved;
+  </script>
+</body>
+</html>
