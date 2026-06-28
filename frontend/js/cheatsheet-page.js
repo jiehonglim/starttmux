@@ -143,11 +143,12 @@ function boot() {
       </ul>
     </section>
 
-    <footer class="site-footer">
-      <a href="index.html" class="btn btn--ghost">← Learn</a>
-      <a href="simulator.html" class="btn">Open simulator</a>
-      <a href="play.html?level=${listPuzzlesByPath()[0].id}&mode=${mode}" class="btn btn--ghost">Start step 1</a>
-    </footer>
+    <section class="cheat-section">
+      <h2>Quick start</h2>
+      <p class="cheat-muted">
+        <a href="play.html?level=${listPuzzlesByPath()[0].id}&mode=${mode}" class="btn">Start step 1</a>
+      </p>
+    </section>
   `;
 }
 

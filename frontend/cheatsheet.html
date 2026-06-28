@@ -8,14 +8,10 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%96%A3</text></svg>">
   <link rel="stylesheet" href="css/terminal.css">
 </head>
-<body>
+<body data-page="cheatsheet">
   <header class="site-header">
     <a href="index.html" class="site-header__brand">start<span>tmux</span></a>
-    <nav class="site-header__nav">
-      <a href="cheatsheet.html" class="site-header__link site-header__link--active">Cheat sheet</a>
-      <a href="index.html" class="site-header__link">Learn</a>
-      <a href="simulator.html" class="site-header__link">Simulator</a>
-    </nav>
+    <nav class="site-header__nav" data-site-nav></nav>
     <button type="button" class="btn btn--ghost" id="theme-toggle" aria-label="Toggle theme">Theme</button>
   </header>
 
@@ -23,16 +19,13 @@
     <p class="cheat-muted">Loading cheat sheet…</p>
   </main>
 
+  <template id="footer-extra">
+    <a href="index.html" class="btn btn--ghost">← Learn</a>
+    <a href="simulator.html" class="btn">Open simulator</a>
+  </template>
+  <footer class="site-footer" data-site-footer></footer>
+
+  <script type="module" src="js/site.js"></script>
   <script type="module" src="js/cheatsheet-page.js"></script>
-  <script>
-    document.getElementById('theme-toggle')?.addEventListener('click', () => {
-      const html = document.documentElement;
-      const next = html.dataset.theme === 'light' ? 'dark' : 'light';
-      html.dataset.theme = next;
-      localStorage.setItem('starttmux_theme', next);
-    });
-    const saved = localStorage.getItem('starttmux_theme');
-    if (saved) document.documentElement.dataset.theme = saved;
-  </script>
 </body>
 </html>

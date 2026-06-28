@@ -3,7 +3,7 @@
 Learn tmux by playing — a free browser puzzle game.
 
 **Play:** [minitcp.com/projects/starttmux](https://minitcp.com/projects/starttmux)
-**Source:** [github.com/jiehonglim/starttmux](https://github.com/jiehonglim/starttmux)
+**Source:** [github.com/jiehonglim/starttmux](https://github.com/jiehonglim/starttmux) (MIT License)
 
 ## What it is
 

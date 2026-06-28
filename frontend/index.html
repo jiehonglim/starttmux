@@ -8,14 +8,10 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%96%A3</text></svg>">
   <link rel="stylesheet" href="css/terminal.css">
 </head>
-<body>
+<body data-page="learn">
   <header class="site-header">
     <a href="index.html" class="site-header__brand">start<span>tmux</span></a>
-    <nav class="site-header__nav">
-      <a href="cheatsheet.html" class="site-header__link">Cheat sheet</a>
-      <a href="index.html" class="site-header__link site-header__link--active">Learn</a>
-      <a href="simulator.html" class="site-header__link">Simulator</a>
-    </nav>
+    <nav class="site-header__nav" data-site-nav></nav>
     <button type="button" class="btn btn--ghost" id="theme-toggle" aria-label="Toggle theme">Theme</button>
   </header>
 
@@ -25,8 +21,8 @@
   </section>
 
   <section class="learn-pillars" aria-label="Learning modes">
+    <a href="index.html" class="learn-pillar learn-pillar--active">Learn</a>
     <a href="cheatsheet.html" class="learn-pillar">Cheat sheet</a>
-    <a href="#golden-path" class="learn-pillar learn-pillar--active">Learn</a>
     <a href="simulator.html" class="learn-pillar">Simulator</a>
   </section>
 
@@ -44,11 +40,13 @@
     <div class="level-grid" id="levelup-grid"></div>
   </section>
 
-  <footer class="site-footer">
+  <template id="footer-extra">
     <a href="simulator.html" class="btn">Open simulator →</a>
     <a href="cheatsheet.html" class="btn btn--ghost">Cheat sheet</a>
-  </footer>
+  </template>
+  <footer class="site-footer" data-site-footer></footer>
 
+  <script type="module" src="js/site.js"></script>
   <script type="module">
     import { listPuzzlesByPath } from './js/puzzles.js?v=20260628b';
     import { loadCompleted, loadCompletedMobile, formatTime } from './js/scoring.js';
@@ -96,16 +94,6 @@
 
     renderTrack('golden', 'golden-path-strip', 'golden-grid');
     renderTrack('levelup', 'levelup-strip', 'levelup-grid');
-
-    document.getElementById('theme-toggle')?.addEventListener('click', () => {
-      const html = document.documentElement;
-      const next = html.dataset.theme === 'light' ? 'dark' : 'light';
-      html.dataset.theme = next;
-      localStorage.setItem('starttmux_theme', next);
-    });
-
-    const saved = localStorage.getItem('starttmux_theme');
-    if (saved) document.documentElement.dataset.theme = saved;
   </script>
 </body>
 </html>
