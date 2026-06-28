@@ -1,5 +1,25 @@
 import { activeWindow, getFocusedPane } from '../state.js';
 import { countRunningAgents } from './processes.js';
+import { agentPromptLabel } from './agents.js';
+
+/** @param {import('./sim-session.js').SimPane} pane */
+function promptForPane(pane, focused) {
+  const proc = pane.shell.process;
+  if (proc?.kind === 'agent' && proc.agent && proc.phase === 'ready') {
+    return focused ? `${agentPromptLabel(proc.agent)} ${pane.shell.input}▌` : '';
+  }
+  if (!focused) return '';
+  const prompt = pane.shell.cwd.replace(/^\/home\/you/, '~');
+  return `${prompt} $ ${pane.shell.input}▌`;
+}
+
+/** @param {import('./sim-session.js').SimPane} pane */
+function procBadgeLabel(pane) {
+  const proc = pane.shell.process;
+  if (proc?.kind === 'agent' && proc.agent && proc.phase === 'ready') return '◎';
+  if (proc) return '●';
+  return '';
+}
 
 /** @param {HTMLElement} root @param {import('./sim-session.js').SimSession} session @param {{ tripleAgent?: boolean }} [flags] */
 export function renderSimSession(root, session, flags = {}) {
@@ -38,24 +58,28 @@ export function renderSimSession(root, session, flags = {}) {
 
     const label = document.createElement('span');
     label.className = 'pane__label';
-    label.textContent = pane.label || pane.id;
+    const proc = pane.shell.process;
+    if (proc?.kind === 'agent' && proc.agent) {
+      label.textContent = proc.agent;
+    } else {
+      label.textContent = pane.label || pane.id;
+    }
     el.appendChild(label);
 
     const screen = document.createElement('pre');
     screen.className = 'pane__screen';
-    const lines = pane.shell.lines.slice(-12);
-    const prompt = pane.shell.cwd.replace(/^\/home\/you/, '~');
-    const inputLine = pane.focused
-      ? `${prompt} $ ${pane.shell.input}▌`
-      : '';
+    const lines = pane.shell.lines.slice(-14);
+    const inputLine = promptForPane(pane, pane.focused);
     screen.textContent = [...lines, inputLine].filter(Boolean).join('\n');
     el.appendChild(screen);
 
-    if (pane.shell.process) {
-      const badge = document.createElement('span');
-      badge.className = 'pane__proc';
-      badge.textContent = '●';
-      el.appendChild(badge);
+    const badge = procBadgeLabel(pane);
+    if (badge) {
+      const badgeEl = document.createElement('span');
+      badgeEl.className = 'pane__proc';
+      badgeEl.textContent = badge;
+      badgeEl.title = proc?.phase === 'ready' ? 'accepting input' : 'running';
+      el.appendChild(badgeEl);
     }
 
     board.appendChild(el);
@@ -77,9 +101,12 @@ export function renderSimSession(root, session, flags = {}) {
   }
 
   const focused = getFocusedPane(win);
-  const procLabel = focused?.shell.process
-    ? ` · ${focused.shell.process.kind} running`
-    : '';
+  let procLabel = '';
+  if (focused?.shell.process?.kind === 'agent') {
+    procLabel = ` · ${focused.shell.process.agent} · accepting input`;
+  } else if (focused?.shell.process) {
+    procLabel = ` · ${focused.shell.process.kind} running`;
+  }
   statusBar.dataset.session = `${session.activeWindow}:${win.panes.length}${procLabel}`;
 
   if (flairEl) {

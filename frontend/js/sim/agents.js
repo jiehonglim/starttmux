@@ -2,39 +2,93 @@
 
 /** @param {AgentKind} kind */
 export function agentBanner(kind) {
-  if (kind === 'grok') return ['Grok Build · coding agent', 'Type Ctrl+C to stop'];
-  if (kind === 'hermes') return ['Hermes agent · task runner', 'Ctrl+C to stop'];
-  return ['Claude Code · planning + edits', 'Ctrl+C to stop'];
-}
-
-/** @param {AgentKind} kind @param {number} tick */
-export function agentTickLine(kind, tick) {
   if (kind === 'grok') {
-    const lines = [
-      '→ Reading src/app.js',
-      '→ Editing tests/app.test.js',
-      '→ Running npm test',
-      '✓ Applied patch (simulated)',
-      '… waiting for your review',
+    return [
+      '┌─ Grok Build ─────────────────────┐',
+      '│  coding agent · simulator        │',
+      '└──────────────────────────────────┘',
     ];
-    return lines[tick % lines.length];
   }
   if (kind === 'hermes') {
-    const lines = [
-      'hermes: queued job #42',
-      'hermes: fetching context',
-      'hermes: writing response chunk',
-      'hermes: idle',
+    return [
+      '┌─ Hermes ─────────────────────────┐',
+      '│  task runner · simulator         │',
+      '└──────────────────────────────────┘',
     ];
-    return lines[tick % lines.length];
   }
-  const lines = [
-    'Planning: split pane layout refactor',
-    'Tool: Read package.json',
-    'Tool: Write src/app.js',
-    'Tests look green — ready for deploy',
+  return [
+    '┌─ Claude Code ────────────────────┐',
+    '│  planning + edits · simulator    │',
+    '└──────────────────────────────────┘',
   ];
-  return lines[tick % lines.length];
+}
+
+/** @param {AgentKind} kind */
+export function agentBootLines(kind) {
+  if (kind === 'grok') {
+    return [
+      '→ indexing workspace',
+      '→ loading tools',
+      '→ ready',
+    ];
+  }
+  if (kind === 'hermes') {
+    return [
+      'hermes: loading workspace',
+      'hermes: fetching context',
+      'hermes: ready',
+    ];
+  }
+  return [
+    'Scanning project layout',
+    'Loading edit tools',
+    'Ready',
+  ];
+}
+
+/** @param {AgentKind} kind */
+export function agentReadyLine(kind) {
+  const name = kind === 'grok' ? 'grok' : kind === 'hermes' ? 'hermes' : 'claude';
+  return `› ${name} accepting input — ⌃b to switch panes`;
+}
+
+/** @param {AgentKind} kind */
+export function agentPromptLabel(kind) {
+  if (kind === 'grok') return 'grok ›';
+  if (kind === 'hermes') return 'hermes ›';
+  return 'claude ›';
+}
+
+/** @param {AgentKind} kind @param {string} line */
+export function agentInputResponse(kind, line) {
+  const trimmed = line.trim();
+  if (!trimmed) return [`${agentPromptLabel(kind)} (empty — type a task)`];
+
+  if (kind === 'hermes') {
+    return [
+      `hermes: received — "${trimmed}"`,
+      'hermes: queued job #43',
+      'hermes: working… (⌃b away anytime)',
+    ];
+  }
+  if (kind === 'grok') {
+    return [
+      `→ Task: ${trimmed}`,
+      '→ Planning edits…',
+      '… still running — ⌃b to check other panes',
+    ];
+  }
+  return [
+    `Task: ${trimmed}`,
+    'Reading relevant files…',
+    '… still running — ⌃b to check other panes',
+  ];
+}
+
+/** @param {AgentKind} kind */
+export function agentAlreadyRunningLine(kind) {
+  const name = kind === 'grok' ? 'grok-build' : kind === 'hermes' ? 'hermes' : 'claude-code';
+  return `${name}: already running — Ctrl+C to stop · ⌃b to switch panes`;
 }
 
 /** @param {string} cmd */

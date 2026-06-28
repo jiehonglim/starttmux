@@ -1,11 +1,21 @@
 import { runVfsCommand } from './vfs.js';
 import { appendEcho } from './sim-session.js';
-import { startCommand, pushLines } from './processes.js';
+import { startCommand, pushLines, submitAgentInput, isAgentAcceptingInput } from './processes.js';
+import { agentPromptLabel } from './agents.js';
 import { checkEasterEgg, easterEggLines, unlockEasterEgg } from './easter-egg.js';
 
 /** @param {import('./sim-session.js').SimPane} pane @param {string} line */
 export function runShellLine(pane, line) {
   const trimmed = line.trim();
+
+  if (isAgentAcceptingInput(pane) && pane.shell.process?.agent) {
+    const label = agentPromptLabel(pane.shell.process.agent);
+    pane.shell.lines.push(`${label} ${line}`);
+    if (pane.shell.lines.length > 200) pane.shell.lines.shift();
+    submitAgentInput(pane, line);
+    return { easterEgg: false };
+  }
+
   appendEcho(pane, line);
 
   if (!trimmed) return { easterEgg: false };

@@ -1,8 +1,17 @@
-import { agentBanner, agentTickLine, matchAgentCommand } from './agents.js';
+import {
+  agentBanner,
+  agentBootLines,
+  agentReadyLine,
+  agentInputResponse,
+  agentAlreadyRunningLine,
+  matchAgentCommand,
+} from './agents.js';
 
 /** @typedef {{
  *   kind: 'agent' | 'test' | 'tail' | 'deploy',
  *   agent?: import('./agents.js').AgentKind,
+ *   phase?: 'boot' | 'ready',
+ *   bootStep?: number,
  *   tick: number,
  *   startedAt: number,
  * }} SimProcess */
@@ -36,17 +45,40 @@ function startProcess(pane, proc) {
   pane.shell.process = proc;
 }
 
+/** @param {import('./sim-session.js').SimPane} pane @param {import('./agents.js').AgentKind} agent */
+function startAgent(pane, agent) {
+  const proc = pane.shell.process;
+  if (proc?.kind === 'agent' && proc.agent === agent) {
+    pushLine(pane, agentAlreadyRunningLine(agent));
+    return { started: true };
+  }
+  if (proc?.kind === 'agent') {
+    pushLine(pane, agentAlreadyRunningLine(proc.agent));
+    return { started: true };
+  }
+
+  startProcess(pane, {
+    kind: 'agent',
+    agent,
+    phase: 'ready',
+    tick: 0,
+    startedAt: Date.now(),
+  });
+  pushLines(pane, [
+    ...agentBanner(agent),
+    ...agentBootLines(agent),
+    agentReadyLine(agent),
+  ]);
+  return { started: true };
+}
+
 /** @param {import('./sim-session.js').SimPane} pane @param {string} cmdLine */
 export function startCommand(pane, cmdLine) {
   const trimmed = cmdLine.trim();
   if (!trimmed) return { started: false };
 
   const agent = matchAgentCommand(trimmed);
-  if (agent) {
-    startProcess(pane, { kind: 'agent', agent, tick: 0, startedAt: Date.now() });
-    pushLines(pane, agentBanner(agent));
-    return { started: true };
-  }
+  if (agent) return startAgent(pane, agent);
 
   if (trimmed === 'npm test' || trimmed === 'npm run test') {
     startProcess(pane, { kind: 'test', tick: 0, startedAt: Date.now() });
@@ -78,17 +110,32 @@ export function startCommand(pane, cmdLine) {
   return { started: false };
 }
 
+/** @param {import('./sim-session.js').SimPane} pane @param {string} line */
+export function submitAgentInput(pane, line) {
+  const proc = pane.shell.process;
+  if (proc?.kind !== 'agent' || proc.phase !== 'ready' || !proc.agent) {
+    return false;
+  }
+
+  const trimmed = line.trim();
+  if (!trimmed) return true;
+
+  pushLines(pane, agentInputResponse(proc.agent, trimmed));
+  return true;
+}
+
+/** @param {import('./sim-session.js').SimPane} pane */
+export function isAgentAcceptingInput(pane) {
+  const proc = pane.shell.process;
+  return proc?.kind === 'agent' && proc.phase === 'ready';
+}
+
 /** @param {import('./sim-session.js').SimPane} pane */
 export function tickProcess(pane) {
   const proc = pane.shell.process;
   if (!proc) return;
 
   proc.tick += 1;
-
-  if (proc.kind === 'agent' && proc.agent) {
-    if (proc.tick % 3 === 0) pushLine(pane, agentTickLine(proc.agent, proc.tick));
-    if (proc.tick > 24) pushLine(pane, '… agent idle (still running)');
-  }
 
   if (proc.kind === 'tail' && proc.tick % 2 === 0) {
     const ts = new Date().toISOString().slice(11, 19);
