@@ -1,5 +1,7 @@
 export const REPO_URL = 'https://github.com/jiehonglim/starttmux';
 export const LICENSE_URL = `${REPO_URL}/blob/main/LICENSE`;
+export const GROK_BUILD_URL = 'https://grok.com/build';
+export const TMUX_URL = 'https://tmux.github.io/';
 
 /** @type {{ id: string, href: string, label: string }[]} */
 export const SITE_NAV = [
@@ -62,7 +64,11 @@ export function renderFooter() {
         respective owners. This educational simulator is not affiliated with or endorsed by
         xAI, Anthropic, or any agent product vendor. Simulated commands and output are fictional.
       </p>
-      <p class="site-footer__credit">Built with Grok <span class="site-footer__heart" aria-hidden="true">♥</span></p>
+      <p class="site-footer__credit">
+        Built with <a href="${GROK_BUILD_URL}">Grok Build</a>
+        <span class="site-footer__heart" aria-hidden="true">♥</span>
+        · Inspired by <a href="${TMUX_URL}">tmux</a>
+      </p>
     </div>
   `;
 }

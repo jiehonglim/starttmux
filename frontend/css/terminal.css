@@ -858,6 +858,16 @@ a:hover {
   color: var(--muted);
 }
 
+.site-footer__credit a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.site-footer__credit a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 .site-footer__heart {
   color: var(--accent);
 }
